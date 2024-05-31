@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+**blogicum/static/*
+static/
 # C extensions
 *.so
 
@@ -67,7 +68,7 @@ instance/
 
 # Scrapy stuff:
 .scrapy
-
+post_images/
 # Sphinx documentation
 docs/_build/
 
