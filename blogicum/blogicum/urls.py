@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import include, path, re_path, reverse_lazy
+from django.urls import include, path, reverse_lazy
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
