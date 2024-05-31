@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'core.apps.CoreConfig',
     'django_bootstrap5',
-    
 ]
 
 MIDDLEWARE = [
@@ -97,6 +96,9 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
 LOGIN_REDIRECT_URL = 'blog:index'
-#AUTH_USER_MODEL='core.CustomUser'
+LOGIN_URL = 'login'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+MEDIA_ROOT = BASE_DIR / 'media'

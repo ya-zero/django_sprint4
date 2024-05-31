@@ -8,14 +8,16 @@ class PostForm(forms.ModelForm):
         model = Post
         exclude = ('author',)
         widgets = {
-            'pub_date': forms.DateInput(attrs={'type': 'datetime-local'})
+            'pub_date': forms.DateTimeInput(
+                format='%Y-%m-%d %H:%M', attrs={'type': 'datetime-local'}
+            )
         }
 
 
-class UserForm(forms.ModelForm):
+class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ('username', 'first_name', 'last_name', 'email')
 
 
 class CommentForm(forms.ModelForm):
