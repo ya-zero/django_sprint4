@@ -73,3 +73,22 @@ class Post(PublishedModel, models.Model):
 
     def __str__(self):
         return self.title[:HEADER_MODEL_LEN]
+
+
+class Comment(PublishedModel):
+    text = models.TextField('Текст')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        verbose_name='Автор публикации',
+        related_name='comments'
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE,
+        verbose_name='Публикация',
+        related_name='comments'
+    )
+
+    class Meta:
+        verbose_name = 'коментарий'
+        verbose_name_plural = 'коментарии'
+        ordering = ('created_at',)

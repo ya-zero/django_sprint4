@@ -6,7 +6,10 @@ SECRET_KEY = 'django-insecure-%5%^rac))=o86$$f)vg=(j^*jqcr@!y5@(i^-dw*h5r#gmo2iu
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,6 +22,7 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'core.apps.CoreConfig',
     'django_bootstrap5',
+    
 ]
 
 MIDDLEWARE = [
@@ -93,3 +97,6 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+LOGIN_REDIRECT_URL = 'blog:index'
+#AUTH_USER_MODEL='core.CustomUser'

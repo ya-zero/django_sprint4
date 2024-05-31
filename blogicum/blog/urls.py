@@ -1,17 +1,26 @@
 from django.urls import path
+#from blog.views import category_posts, index, post_detail, PostCreateView, get_profile, edit_profile
+from blog import views
 
-from blog.views import category_posts, index, post_detail,PostCreateView, handle_url_error
 
 app_name = 'blog'
-
-
 urlpatterns = [
-    path('', index, name='index'),
-    path('posts/<int:post_id>/', post_detail, name='post_detail'),
-    path('category/<slug:category_slug>/', category_posts,
+    path('', views.index, name='index'),
+    path('posts/<int:post_id>/', views.post_detail, name='post_detail'),
+    #path('profile/<slug:username>/edit/', edit_profile, name='edit_profile'),
+    path('profile/<str:username>/', views.get_profile, name='profile'),
+    path('category/<slug:category_slug>/', views.category_posts,
          name='category_posts'),
-    path('category/', PostCreateView.as_view(),
+    path('edit_profile/', views.ProfileUpdateView.as_view(),
+         name='edit_profile'),
+    path('category/', views.PostCreateView.as_view(),
          name='create_post'),
-    path('category/', handle_url_error,
-         name='profile'),
+    path('posts/<int:post_id>/comment/', views.CommentCreateView.as_view(),
+         name='add_comment'),
+    path('posts/<int:post_id>/edit_comment/<int:comment_id>/',
+         views.CommentUpdateView.as_view(),
+         name='edit_comment'),
+    path('posts/<int:post_id>/delete_comment/<int:comment_id>/',
+         views.CommentDeleteView.as_view(),
+         name='delete_comment')
 ]

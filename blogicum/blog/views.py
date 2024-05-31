@@ -1,10 +1,20 @@
 from django.shortcuts import get_object_or_404, render
-from django.utils import timezone
-from django.http import HttpResponseNotFound
+
 from blog.constant import COUNT_POST
-from blog.models import Category, Post
-from django.views.generic import CreateView, ListView
+from blog.models import Category, Post, User, Comment
+from django.views.generic import CreateView
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    View)
+from .forms import CommentForm, PostForm
 
 def get_base_request():
     current_date = timezone.now()
@@ -38,18 +48,82 @@ def category_posts(request, category_slug):
     return render(request, 'blog/category.html',
                   {'category': category, 'post_list': posts})
 
+
 class PostCreateView(CreateView):
-    # Указываем модель, с которой работает CBV...
     model = Post
-    # Этот класс сам может создать форму на основе модели!
-    # Нет необходимости отдельно создавать форму через ModelForm.
-    # Указываем поля, которые должны быть в форме:
     fields = '__all__'
-    # Явным образом указываем шаблон:
     template_name = 'blog/index.html'
-    # Указываем namespace:name страницы, куда будет перенаправлен пользователь
-    # после создания объекта:
     success_url = reverse_lazy('blog:index')
 
-def handle_url_error(request, exception):
-    return HttpResponseNotFound("Страница не найдена. Здесь может быть ваша заглушка для ошибки.")
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = 'blog/user.html'
+    fields = ('username', 'first_name', 'last_name', 'email')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'blog:profile',
+            kwargs={'username': self.request.user.username}
+        )
+
+
+
+
+def get_profile(request, username):
+    profile = get_object_or_404(User, username=username)
+    #user_posts = Post.objects.filter(author=profile.).order_by(
+    #    '-pub_date')
+    #paginator = Paginator(user_posts, 10)
+    #page_number = request.GET.get('page')
+    #page_obj = paginator.get_page(page_number)
+
+    context = {
+        'profile': profile,
+        #'page_obj': page_obj,
+        }
+    return render(request, 'blog/profile.html', context)
+
+class CommentMixin(LoginRequiredMixin):
+    model = Comment
+    template_name = 'blog/comment.html'
+    pk_url_kwarg = 'comment_id'
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', args=[self.kwargs['post_id']])
+
+    def dispatch(self, request, *args, **kwargs):
+        coment = get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        if coment.author != self.request.user:
+            return redirect('blog:post_detail',
+                            post_id=self.kwargs['post_id']
+                            )
+        return super().dispatch(request, *args, **kwargs)
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    template_name = 'blog/comment.html'
+    form_class = CommentForm
+
+    def get_context_data(self, **kwargs):
+        return dict(**super().get_context_data(**kwargs), form=CommentForm())
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', args=[self.kwargs['post_id']])
+
+
+class CommentUpdateView(CommentMixin, UpdateView):
+    form_class = CommentForm
+
+
+class CommentDeleteView(CommentMixin, DeleteView):
+    pass
