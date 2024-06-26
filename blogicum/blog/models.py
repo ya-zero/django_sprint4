@@ -1,7 +1,7 @@
 from core.models import PublishedModel
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.urls import reverse
+
 
 from blog.constant import HEADER_MODEL_LEN
 
@@ -75,7 +75,7 @@ class Post(PublishedModel, models.Model):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
         default_related_name = '%(model_name)s'
-        default_related_name='posts'
+        default_related_name = 'posts'
         ordering = ['-pub_date']
 
     def __str__(self):
@@ -98,5 +98,5 @@ class Comment(PublishedModel, models.Model):
     class Meta:
         verbose_name = 'коментарий'
         verbose_name_plural = 'Коментарии'
-        default_related_name='comments'
-        ordering = ['created_at',]
+        default_related_name = 'comments'
+        ordering = ['created_at']
