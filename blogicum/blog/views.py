@@ -49,7 +49,6 @@ def category_posts(request, category_slug):
                   {'category': category, 'page_obj': page_obj})
 
 
-
 class IndexList(ListView):
     template_name = 'blog/index.html'
     paginate_by = 10

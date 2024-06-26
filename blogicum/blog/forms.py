@@ -9,6 +9,7 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ('text',)
 
+
 class PostForm(forms.ModelForm):
 
     class Meta:
@@ -18,4 +19,3 @@ class PostForm(forms.ModelForm):
         widgets = {
             'pub_date': forms.DateInput(attrs={'type': 'date'})
         }
-
