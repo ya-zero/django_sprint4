@@ -2,8 +2,7 @@ from django.contrib import admin
 from django.utils.text import Truncator
 
 from blog.constant import LEN_ADMIN_POST, MESSAGE_TEXT_RU
-from blog.models import Category, Location, Post
-
+from blog.models import Category, Location, Post, Comment
 
 admin.site.empty_value_display = 'Не задано'
 
@@ -28,7 +27,10 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = (
         'pub_date',
     )
-    search_fields = ('title', 'text', 'location', 'author',)
+    search_fields = ('title',
+                     'text',
+                     'location__name',
+                     'author__username',)
     list_filter = ('is_published', 'category')
     list_display_links = ('title',)
 
@@ -70,3 +72,19 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('is_published',)
     list_display_links = ('name',)
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'text',
+        'author',
+        'post',
+        'is_published'
+    )
+    list_editable = (
+        'is_published',
+    )
+    search_fields = ('text', 'author__username')
+    list_filter = ('is_published',)
+    list_display_links = ('text',)
