@@ -33,7 +33,8 @@ class Category(PublishedModel, models.Model):
         'Идентификатор',
         unique=True,
         help_text=('Идентификатор страницы для URL; разрешены'
-                   ' символы латиницы, цифры, дефис и подчёркивание.')
+                   ' символы латиницы, цифры, дефис и подчёркивание.'
+                   )
         )
 
     class Meta:
@@ -55,7 +56,9 @@ class Post(PublishedModel, models.Model):
     pub_date = models.DateTimeField(
         'Дата и время публикации',
         help_text=('Если установить дату и время в будущем'
-                   ' — можно делать отложенные публикации.'))
+                   ' — можно делать отложенные публикации.'
+                   )
+        )
     author = models.ForeignKey(
         User,
         verbose_name='Автор публикации',

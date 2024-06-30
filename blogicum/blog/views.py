@@ -2,15 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 
 from blog.forms import CommentForm, PostForm
-from blog.models import Category, Comment,  Post
+from blog.models import Category, Post
 from blog.mixin import OnlyAuthorMixin, CommentMixin
 from blog.service import get_base_request
 from blog.constant import POST_PER_PAGE
@@ -20,7 +19,7 @@ def category_posts(request, category_slug):
     category = get_object_or_404(Category.objects.filter(is_published=True),
                                  slug=category_slug)
     posts = get_base_request().filter(category=category).annotate(
-            comment_count=Count('comments'))
+                                    comment_count=Count('comments'))
     paginator = Paginator(posts, POST_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
