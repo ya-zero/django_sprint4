@@ -131,17 +131,16 @@ class CommentDeleteView(LoginRequiredMixin,
 class GetProfile(ListView):
     template_name = 'blog/profile.html'
     model = Post
-    ordering = '-pub_date'
     paginate_by = POST_PER_PAGE
 
     def get_queryset(self):
-        username = self.kwargs['username']
-        user = get_object_or_404(User, username=username)
-        print(user, self.request.user)
-        if user == self.request.user:
-            return Post.objects.all()
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        if self.request.user == user:
+            return Post.objects.filter(author=user).annotate(
+                comment_count=Count('comments')).order_by('-pub_date')
         else:
-            return get_base_request()
+            return get_base_request().filter(author=user,).annotate(
+                comment_count=Count('comments'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
