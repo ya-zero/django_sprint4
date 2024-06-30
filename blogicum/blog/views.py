@@ -10,7 +10,7 @@ from django.views.generic.edit import CreateView
 
 
 from blog.forms import CommentForm, PostForm
-from blog.models import Category, Comment, Post
+from blog.models import Category, Comment,  Post
 from blog.mixin import OnlyAuthorMixin, CommentMixin
 from blog.service import get_base_request
 from blog.constant import POST_PER_PAGE
