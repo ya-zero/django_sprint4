@@ -19,4 +19,3 @@ class PostForm(forms.ModelForm):
                                             attrs={'type': 'datetime-local'}),
             'text': forms.Textarea(attrs={'cols': 10, 'rows': 10})
         }
-

@@ -67,7 +67,7 @@ class CreatePost(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
-    
+
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
@@ -137,11 +137,11 @@ class GetProfile(ListView):
     def get_queryset(self):
         username = self.kwargs['username']
         user = get_object_or_404(User, username=username)
-        print(user,self.request.user)
+        print(user, self.request.user)
         if user == self.request.user:
             return Post.objects.all()
         else:
-            return  get_base_request()
+            return get_base_request()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

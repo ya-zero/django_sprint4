@@ -55,8 +55,7 @@ class Post(PublishedModel, models.Model):
     pub_date = models.DateTimeField(
         'Дата и время публикации',
         help_text=('Если установить дату и время в будущем'
-                   ' — можно делать отложенные публикации.')
-        )
+                   ' — можно делать отложенные публикации.'))
     author = models.ForeignKey(
         User,
         verbose_name='Автор публикации',
@@ -100,8 +99,7 @@ class Comment(PublishedModel, models.Model):
         )
     author = models.ForeignKey(User,
                                on_delete=models.CASCADE,
-                               verbose_name='Автор публикации'
-        )
+                               verbose_name='Автор публикации')
 
     class Meta:
         verbose_name = 'коментарий'
