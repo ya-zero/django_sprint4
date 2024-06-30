@@ -18,8 +18,11 @@ from blog.constant import POST_PER_PAGE
 def category_posts(request, category_slug):
     category = get_object_or_404(Category.objects.filter(is_published=True),
                                  slug=category_slug)
-    posts = get_base_request().filter(category=category).annotate(
-                                    comment_count=Count('comments'))
+    posts = (
+        get_base_request()
+        .filter(category=category)
+        .annotate(comment_count=Count("comments"))
+    )
     paginator = Paginator(posts, POST_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
