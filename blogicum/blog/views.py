@@ -3,16 +3,20 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.urls import reverse
+from django.views.generic import (
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView
+)
 from django.views.generic.edit import CreateView
 
-
-from blog.forms import CommentForm, PostForm
-from blog.models import Category, Post
-from blog.mixin import OnlyAuthorMixin, CommentMixin
-from blog.service import get_base_request
 from blog.constant import POST_PER_PAGE
+from blog.forms import CommentForm, PostForm
+from blog.mixin import CommentMixin, OnlyAuthorMixin
+from blog.models import Category, Post
+from blog.service import get_base_request
 
 
 def category_posts(request, category_slug):
@@ -58,11 +62,8 @@ class PostDetail(DetailView):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, pk=self.kwargs['post_id'])
         if obj.author == self.request.user:
-            object_auth = Post.objects.all()
-        else:
-            object_auth = get_base_request()
-
-        return get_object_or_404(object_auth, pk=self.kwargs['post_id'])
+            return obj
+        return get_object_or_404(get_base_request(), pk=self.kwargs['post_id'])
 
 
 class CreatePost(LoginRequiredMixin, CreateView):
@@ -93,18 +94,24 @@ class PostEdit(LoginRequiredMixin, OnlyAuthorMixin, UpdateView):
         )
 
 
-class PostDelete(LoginRequiredMixin, OnlyAuthorMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, OnlyAuthorMixin, DeleteView):
     model = Post
     pk_url_kwarg = 'post_id'
     form_class = PostForm
     template_name = 'blog/create.html'
-    success_url = reverse_lazy('blog:index')
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Post, pk=self.kwargs.get(self.pk_url_kwarg))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post_instance = Post.objects.first()
-        context['form'] = self.form_class(instance=post_instance)
+        context['form'] = self.form_class(instance=self.get_object())
         return context
+
+    def get_success_url(self):
+        return reverse(
+            'blog:index'
+            )
 
 
 class CommentCreateView(LoginRequiredMixin, CommentMixin, CreateView):
@@ -138,11 +145,20 @@ class GetProfile(ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs['username'])
         if self.request.user == user:
-            return Post.objects.filter(author=user).annotate(
-                comment_count=Count('comments')).order_by('-pub_date')
-        else:
-            return get_base_request().filter(author=user,).annotate(
-                comment_count=Count('comments'))
+            return (
+                Post.objects.filter(author=user)
+                .annotate(comment_count=Count("comments"))
+                .order_by("-pub_date")
+                .select_related("category", "author", "location")
+            )
+        return (
+            get_base_request()
+            .filter(
+                author=user,
+            )
+            .annotate(comment_count=Count("comments"))
+            .select_related("category", "author", "location")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
