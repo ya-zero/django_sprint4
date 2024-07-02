@@ -59,8 +59,7 @@ class PostDetail(DetailView):
         return context
 
     def get_object(self):
-        queryset = self.get_queryset()
-        obj = get_object_or_404(queryset, pk=self.kwargs['post_id'])
+        obj = super().get_object()
         if obj.author == self.request.user:
             return obj
         return get_object_or_404(get_base_request(), pk=self.kwargs['post_id'])
@@ -99,9 +98,6 @@ class PostDeleteView(LoginRequiredMixin, OnlyAuthorMixin, DeleteView):
     pk_url_kwarg = 'post_id'
     form_class = PostForm
     template_name = 'blog/create.html'
-
-    def get_object(self, queryset=None):
-        return get_object_or_404(Post, pk=self.kwargs.get(self.pk_url_kwarg))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -155,7 +151,6 @@ class GetProfile(ListView):
                 author=user,
             )
             .annotate(comment_count=Count("comments"))
-            .select_related("category", "author", "location")
         )
 
     def get_context_data(self, **kwargs):
