@@ -24,12 +24,6 @@ urlpatterns = [
     path('', include('blog.urls', namespace='blog')),
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL,
-#                           document_root=settings.MEDIA_ROOT)
-
 if settings.DEBUG:
-    import debug_toolbar
-    # Добавить к списку urlpatterns список адресов из приложения debug_toolbar:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
