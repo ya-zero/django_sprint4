@@ -109,9 +109,7 @@ class PostDeleteView(LoginRequiredMixin, OnlyAuthorMixin, DeleteView):
         return context
 
     def get_success_url(self):
-        return reverse(
-            'blog:index'
-            )
+        return reverse('blog:index')
 
 
 class CommentCreateView(LoginRequiredMixin, CommentMixin, CreateView):

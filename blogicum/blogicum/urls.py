@@ -33,5 +33,3 @@ if settings.DEBUG:
     # Добавить к списку urlpatterns список адресов из приложения debug_toolbar:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
-    urlpatterns += (path('__debug__/', include(debug_toolbar.urls)),)
- 
